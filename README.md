@@ -4,6 +4,12 @@
   <p>AIベースの総合コミュニティ＆予約プラットフォーム<br>
   AI 기반의 종합 커뮤니티 및 예약 플랫폼</p>
 
+<p><h2>click here ↓</h2></p>
+
+[![Kanbee Project Video](https://img.youtube.com/vi/l8ojDQdebN8/0.jpg)](https://www.youtube.com/watch?v=l8ojDQdebN8)
+
+  
+
   <p>
     <img src="https://img.shields.io/badge/Spring%20Boot-3.4.0-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot">
     <img src="https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white" alt="Java">
