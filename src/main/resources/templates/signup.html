@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{signup.title}">KANBEE 会員登録</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { 
+            --kanbee-yellow: #FFD700; 
+            --kanbee-warm: #FFF9E3; 
+            --kanbee-brown: #5D4037;
+        }
+        body { background-color: #FFFDF0; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; align-items: center; min-height: 100vh; padding: 40px 0; }
+        .signup-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 500px; margin: auto; border-top: 5px solid var(--kanbee-yellow); }
+        .kanbee-char { width: 60px; height: 60px; position: relative; margin: 0 auto 20px; cursor: pointer; transition: transform 0.3s; }
+        .kanbee-char:hover { transform: scale(1.1); }
+        .kanbee-fly-anim { animation: flyAway 1s ease-in-out forwards; pointer-events: none; }
+        
+        @keyframes flyAway {
+            0% { transform: scale(1.1) translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0.1) translate(200px, -200px) rotate(45deg); opacity: 0; }
+        }
+
+        .bee-body { width: 40px; height: 32px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 15px; left: 10px; border: 3px solid #333; z-index: 2; }
+        .bee-wing { width: 20px; height: 25px; background: rgba(255, 255, 255, 0.8); border: 1px solid #DDD; border-radius: 50%; position: absolute; top: 5px; z-index: 1; }
+        .taegeuk { width: 15px; height: 15px; position: absolute; top: 22px; left: 22px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 2px solid #333; z-index: 3; }
+        .bee-eye { width: 4px; height: 4px; background: #333; border-radius: 50%; position: absolute; top: 22px; z-index: 4; }
+        @keyframes flutter {
+            0% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(-10deg); }
+        }
+        .bee-wing.left { animation: flutter 0.2s infinite alternate; }
+        .bee-wing.right { animation: flutter 0.2s infinite alternate-reverse; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="signup-card">
+        <div class="d-flex justify-content-end mb-2">
+            <div class="dropdown">
+                <button class="btn btn-link btn-sm dropdown-toggle text-decoration-none text-muted" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="z-index: 1050;">
+                    <li><a class="dropdown-item small" href="?lang=ja">🇯🇵 日本語</a></li>
+                    <li><a class="dropdown-item small" href="?lang=en">🇺🇸 English</a></li>
+                    <li><a class="dropdown-item small" href="?lang=ko">🇰🇷 한국어</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mb-4">
+            <div class="kanbee-char" onclick="location.href='/'" style="cursor: pointer;">
+                <div class="bee-wing left" style="left: 5px;"></div>
+                <div class="bee-wing right" style="right: 5px;"></div>
+                <div class="bee-body"></div>
+                <div class="taegeuk"></div>
+                <div class="bee-eye" style="left: 17px;"></div>
+                <div class="bee-eye" style="right: 17px;"></div>
+            </div>
+            <h2 class="fw-bold" th:text="#{signup.title}">KANBEE 会員登録</h2>
+            <p class="text-muted small" th:text="#{signup.subtitle}">韓国旅行の強い味方！アカウントを作成しましょう。</p>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger text-center small" th:text="#{${errorMessage}}">
+            すでに存在するIDまたはニックネームです。
+        </div>
+
+        <form th:action="@{/signup}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-bold" th:text="#{signup.username}">ID</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="username" name="username" th:placeholder="#{signup.placeholder.username}" required>
+                    <button id="checkDupBtn" class="btn btn-outline-warning btn-sm" type="button" th:text="#{signup.check_dup}">Check</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label fw-bold" th:text="#{login.password}">パスワード</label>
+                <input type="password" class="form-control" id="password" name="password" th:placeholder="#{signup.placeholder.password}" required>
+            </div>
+            <div class="mb-3">
+                <label for="password_confirm" class="form-label fw-bold" th:text="#{signup.password_confirm}">パスワード確認</label>
+                <input type="password" class="form-control" id="password_confirm" name="password_confirm" th:placeholder="#{signup.placeholder.confirm}" required>
+            </div>
+            <div class="mb-4">
+                <label for="nickname" class="form-label fw-bold" th:text="#{signup.nickname}">ニックネーム</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" th:placeholder="#{signup.placeholder.nickname}" required>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold mb-3" th:text="#{signup.btn}">登録する</button>
+            <div class="text-center">
+                <a th:href="@{/login}" class="text-decoration-none text-muted small" th:text="#{signup.already_have}">すでにアカウントをお持ちですか？ ログイン</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function flyKanbee(element) {
+        element.classList.add('kanbee-fly-anim');
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1000);
+    }
+</script>
+<script th:inline="javascript">
+    document.getElementById('checkDupBtn').addEventListener('click', function() {
+        const usernameInput = document.getElementById('username');
+        const username = usernameInput.value.trim();
+        usernameInput.value = username; // Update input with trimmed value
+        
+        if (!username) {
+            alert(/*[[#{signup.alert.username_invalid}]]*/ 'Invalid ID');
+            return;
+        }
+        
+        fetch('/api/check-username?username=' + username)
+            .then(response => response.json())
+            .then(isAvailable => {
+                if (isAvailable) {
+                    alert(/*[[#{signup.msg.username_available}]]*/ 'Available');
+                } else {
+                    alert(/*[[#{signup.msg.username_taken}]]*/ 'Taken');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+</body>
+</html>

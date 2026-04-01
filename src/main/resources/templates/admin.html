@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{nav.admin}">管理者ページ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { 
+            --kanbee-yellow: #FFD700; 
+            --kanbee-warm: #FFF9E3; 
+            --kanbee-brown: #5D4037;
+        }
+        body { background-color: #FFFDF0; font-family: 'Helvetica Neue', Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .kanbee-char-mini { width: 50px; height: 50px; position: relative; cursor: pointer; }
+        .bee-body-mini { width: 30px; height: 24px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 12px; left: 10px; border: 2px solid #333; z-index: 2; }
+        .bee-wing-mini { width: 15px; height: 18px; background: rgba(255, 255, 255, 0.9); border: 1px solid #DDD; border-radius: 50%; position: absolute; top: 5px; z-index: 1; }
+        .taegeuk-mini { width: 12px; height: 12px; position: absolute; top: 18px; left: 19px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 1px solid #333; z-index: 3; }
+        .bee-eye-mini { width: 3px; height: 3px; background: #333; border-radius: 50%; position: absolute; top: 18px; z-index: 4; }
+        
+        .top-header { background-color: white; padding: 15px 0; border-bottom: 3px solid var(--kanbee-yellow); }
+        .navbar { background-color: var(--kanbee-yellow); padding: 0; }
+        .nav-link { color: var(--kanbee-brown) !important; font-weight: bold; padding: 12px 20px !important; }
+        
+        .admin-header { background: white; padding: 40px 0; border-bottom: 1px solid var(--kanbee-warm); margin-bottom: 30px; }
+        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 15px; margin-bottom: 25px; }
+        
+        .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+        .status-PENDING { background: #FFF9C4; color: #F57F17; }
+        .status-PROCESSING { background: #E3F2FD; color: #1976D2; }
+        .status-COMPLETED { background: #E8F5E9; color: #388E3C; }
+        .status-CANCELLED { background: #FFEBEE; color: #C62828; }
+        
+        footer { background-color: var(--kanbee-brown); color: white; padding: 40px 0; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <div class="kanbee-char-mini me-2">
+                <div class="bee-wing-mini" style="left: 5px; transform: rotate(-30deg);"></div>
+                <div class="bee-wing-mini" style="right: 5px; transform: rotate(30deg);"></div>
+                <div class="bee-body-mini"></div>
+                <div class="taegeuk-mini"></div>
+                <div class="bee-eye-mini" style="left: 15px;"></div>
+                <div class="bee-eye-mini" style="right: 15px;"></div>
+            </div>
+            KANBEE ADMIN
+        </a>
+        <div class="d-flex align-items-center">
+            <span class="me-3 text-muted small"><i class="bi bi-person-circle"></i> <span th:text="${userNickname}">Admin</span></span>
+            <a href="/" class="btn btn-outline-secondary btn-sm me-2">User Mode</a>
+            <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm" th:text="#{nav.logout}">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-header">
+    <div class="container">
+        <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-warning me-2"></i> Admin Dashboard</h2>
+        <p class="text-muted mb-0">Manage reservations and user requests.</p>
+        
+        <!-- 알림 메시지 (대기 중인 예약이 있을 때만 표시) -->
+        <div th:if="${pendingCount > 0}" class="alert alert-warning mt-3 d-flex align-items-center shadow-sm" role="alert">
+            <i class="bi bi-bell-fill fs-4 me-3"></i>
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">New Reservation Requests!</h5>
+                <span th:text="${pendingCount}">0</span> pending requests need your attention.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title fw-bold mb-4">Reservation Requests</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Category</th>
+                            <th>Date/Time</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="res : ${reservations}">
+                            <td th:text="${res.id}">1</td>
+                            <td th:text="${res.username}">user1</td>
+                            <td>
+                                <span class="badge bg-secondary" th:text="${res.category}">RESTAURANT</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold" th:text="${res.requestTime}">2024-01-01 19:00</div>
+                                <small class="text-muted" th:text="${#temporals.format(res.createdAt, 'yyyy-MM-dd HH:mm')}">Created</small>
+                            </td>
+                            <td>
+                                <div th:text="${res.requirements}">Requirements...</div>
+                                <div class="small text-muted mt-1">Headcount: <span th:text="${res.headcount}">2</span></div>
+                                <a th:if="${res.imageUrl}" th:href="${res.imageUrl}" target="_blank" class="btn btn-link btn-sm p-0 d-block"><i class="bi bi-image"></i> View Image</a>
+                                <a th:if="${res.referenceUrl}" th:href="${res.referenceUrl}" target="_blank" class="btn btn-link btn-sm p-0 d-block text-truncate" style="max-width: 200px;">
+                                    <i class="bi bi-link-45deg"></i> User Link
+                                </a>
+                                <div th:if="${res.ticketLink}" class="small text-success mt-1"><i class="bi bi-ticket-perforated"></i> Ticket Sent</div>
+                                <div th:if="${res.adminComment}" class="small text-primary mt-1"><i class="bi bi-chat-quote"></i> <span th:text="${res.adminComment}">Comment</span></div>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/reservation/update-status}" method="post" class="d-flex gap-1">
+                                    <input type="hidden" name="id" th:value="${res.id}">
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 130px;"
+                                            th:classappend="${res.status == 'PENDING' ? 'bg-warning-subtle' : (res.status == 'COMPLETED' ? 'bg-success-subtle' : '')}">
+                                        <option value="PENDING" th:selected="${res.status == 'PENDING'}">PENDING</option>
+                                        <option value="PROCESSING" th:selected="${res.status == 'PROCESSING'}">PROCESSING</option>
+                                        <option value="COMPLETED" th:selected="${res.status == 'COMPLETED'}">COMPLETED</option>
+                                        <option value="CANCELLED" th:selected="${res.status == 'CANCELLED'}">CANCELLED</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editModal"
+                                        th:data-id="${res.id}"
+                                        th:data-category="${res.category}"
+                                        th:data-request-time="${res.requestTime}"
+                                        th:data-headcount="${res.headcount}"
+                                        th:data-requirements="${res.requirements}"
+                                        th:data-reference-url="${res.referenceUrl}"
+                                        th:data-image-url="${res.imageUrl}"
+                                        th:data-ticket-link="${res.ticketLink}"
+                                        th:data-admin-comment="${res.adminComment}"
+                                        th:data-status="${res.status}"
+                                        onclick="populateModal(this)">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </button>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reservations)}">
+                            <td colspan="8" class="text-center py-4 text-muted">No reservations found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="/admin/reservation/update" method="post">
+                <div class="modal-header bg-warning-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> Edit Reservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit-id">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Category</label>
+                            <select name="category" id="edit-category" class="form-select">
+                                <option value="RESTAURANT">RESTAURANT</option>
+                                <option value="POPUP">POPUP</option>
+                                <option value="HAIR">HAIR</option>
+                                <option value="SPA">SPA</option>
+                                <option value="HOTEL">HOTEL</option>
+                                <option value="DELIVERY">DELIVERY</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Status</label>
+                            <select name="status" id="edit-status" class="form-select">
+                                <option value="PENDING">PENDING</option>
+                                <option value="PROCESSING">PROCESSING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Request Time</label>
+                            <input type="text" name="requestTime" id="edit-requestTime" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Headcount</label>
+                            <input type="number" name="headcount" id="edit-headcount" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Requirements</label>
+                        <textarea name="requirements" id="edit-requirements" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Admin Comment</label>
+                        <textarea name="adminComment" id="edit-adminComment" class="form-control" rows="2" placeholder="Leave a note for the user..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ticket Link</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-ticket-perforated"></i></span>
+                            <input type="text" name="ticketLink" id="edit-ticketLink" class="form-control" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Reference URL</label>
+                        <input type="text" name="referenceUrl" id="edit-referenceUrl" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Image URL</label>
+                        <input type="text" name="imageUrl" id="edit-imageUrl" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function populateModal(button) {
+        document.getElementById('edit-id').value = button.getAttribute('data-id');
+        document.getElementById('edit-category').value = button.getAttribute('data-category');
+        document.getElementById('edit-requestTime').value = button.getAttribute('data-request-time');
+        document.getElementById('edit-headcount').value = button.getAttribute('data-headcount');
+        document.getElementById('edit-requirements').value = button.getAttribute('data-requirements');
+        document.getElementById('edit-referenceUrl').value = button.getAttribute('data-reference-url');
+        document.getElementById('edit-imageUrl').value = button.getAttribute('data-image-url');
+        document.getElementById('edit-ticketLink').value = button.getAttribute('data-ticket-link');
+        document.getElementById('edit-adminComment').value = button.getAttribute('data-admin-comment');
+        document.getElementById('edit-status').value = button.getAttribute('data-status');
+    }
+</script>
+</body>
+</html>

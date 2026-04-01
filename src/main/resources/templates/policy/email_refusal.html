@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Collection Refusal - KANBEE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="container py-5 mt-5">
+        <h2 class="fw-bold mb-4" style="color: #5D4037;"><i class="bi bi-envelope-slash-fill me-2"></i>Email Collection Refusal</h2>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <div class="alert alert-danger d-flex align-items-center mb-4">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div>
+                        <strong>Notice:</strong> We strictly prohibit the unauthorized collection of email addresses posted on this website using email collection programs or other technical devices.
+                    </div>
+                </div>
+
+                <p class="text-muted">
+                    Any violation of this policy may result in criminal penalties under the Act on Promotion of Information and Communications Network Utilization and Information Protection, etc.
+                </p>
+                
+                <h5 class="fw-bold text-dark mt-4">Related Laws</h5>
+                <ul class="text-muted">
+                    <li>Act on Promotion of Information and Communications Network Utilization and Information Protection, Article 50-2</li>
+                    <li>Act on Promotion of Information and Communications Network Utilization and Information Protection, Article 74</li>
+                </ul>
+
+                <div class="alert alert-light mt-4 border">
+                    <small class="text-secondary">Effective Date: 2024-01-01</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

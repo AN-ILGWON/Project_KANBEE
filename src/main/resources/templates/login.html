@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login.title}">KANBEE ログイン</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { 
+            --kanbee-yellow: #FFD700; 
+            --kanbee-warm: #FFF9E3; 
+            --kanbee-brown: #5D4037;
+        }
+        body { background-color: #FFFDF0; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; align-items: center; min-height: 100vh; }
+        .login-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; margin: auto; border-top: 5px solid var(--kanbee-yellow); }
+        .kanbee-char { width: 60px; height: 60px; position: relative; margin: 0 auto 20px; cursor: pointer; transition: transform 0.3s; }
+        .kanbee-char:hover { transform: scale(1.1); }
+        .kanbee-fly-anim { animation: flyAway 1s ease-in-out forwards; pointer-events: none; }
+        
+        @keyframes flyAway {
+            0% { transform: scale(1.1) translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0.1) translate(200px, -200px) rotate(45deg); opacity: 0; }
+        }
+
+        .bee-body { width: 40px; height: 32px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 15px; left: 10px; border: 3px solid #333; z-index: 2; }
+        .bee-wing { width: 20px; height: 25px; background: rgba(255, 255, 255, 0.8); border: 1px solid #DDD; border-radius: 50%; position: absolute; top: 5px; z-index: 1; }
+        .taegeuk { width: 15px; height: 15px; position: absolute; top: 22px; left: 22px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 2px solid #333; z-index: 3; }
+        .bee-eye { width: 4px; height: 4px; background: #333; border-radius: 50%; position: absolute; top: 22px; z-index: 4; }
+        .bee-mouth { width: 6px; height: 3px; border-bottom: 1px solid #333; border-radius: 50%; position: absolute; top: 30px; left: 27px; z-index: 4; }
+        .bee-cheek { width: 4px; height: 2px; background: #FFA0A0; border-radius: 50%; position: absolute; top: 28px; z-index: 4; opacity: 0.6; }
+        
+        @keyframes flutter {
+            0% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(-10deg); }
+        }
+        .bee-wing.left { animation: flutter 0.2s infinite alternate; }
+        .bee-wing.right { animation: flutter 0.2s infinite alternate-reverse; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="login-card">
+        <div class="d-flex justify-content-end mb-2">
+            <div class="dropdown">
+                <button class="btn btn-link btn-sm dropdown-toggle text-decoration-none text-muted" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="z-index: 1050;">
+                    <li><a class="dropdown-item small" href="?lang=ja">🇯🇵 日本語</a></li>
+                    <li><a class="dropdown-item small" href="?lang=en">🇺🇸 English</a></li>
+                    <li><a class="dropdown-item small" href="?lang=ko">🇰🇷 한국어</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mb-4">
+            <div class="kanbee-char" onclick="flyKanbee(this)">
+                <div class="bee-wing left" style="left: 5px;"></div>
+                <div class="bee-wing right" style="right: 5px;"></div>
+                <div class="bee-body"></div>
+                <div class="taegeuk"></div>
+                <div class="bee-eye" style="left: 17px;"></div>
+                <div class="bee-eye" style="right: 17px;"></div>
+            </div>
+            <h2 class="fw-bold" th:text="#{login.title}">KANBEE ログイン</h2>
+        </div>
+
+        <script>
+            function flyKanbee(element) {
+                element.classList.add('kanbee-fly-anim');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 800);
+            }
+        </script>
+
+        <div th:if="${param.error}" class="alert alert-danger text-center small" th:text="#{login.error.invalid}">
+            IDまたはパスワードが間違っています。
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success text-center small" th:text="#{${successMessage}}">
+            会員登録が完了しました。
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-bold" th:text="#{login.username}">ID / ユーザー名</label>
+                <input type="text" class="form-control rounded-pill px-3" id="username" name="username" required>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label fw-bold" th:text="#{login.password}">パスワード</label>
+                <input type="password" class="form-control rounded-pill px-3" id="password" name="password" required>
+            </div>
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
+                <label class="form-check-label small text-muted" for="remember-me" th:text="#{login.remember_me}">ログイン状態を維持する</label>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold mb-3" th:text="#{login.btn}">ログイン</button>
+            <div class="text-center">
+                <a th:href="@{/signup}" class="text-decoration-none text-muted small" th:text="#{login.no_account}">アカウントをお持ちでないですか？ 会員登録</a>
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="text-decoration-none text-muted small" th:text="#{login.back_home}">← ホームに戻る</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

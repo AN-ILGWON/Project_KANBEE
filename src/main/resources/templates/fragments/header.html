@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header">
+    <div class="top-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center fw-bold text-decoration-none text-dark" href="/" onclick="flyKanbeeMini(this); return false;">
+                <div class="kanbee-char-mini me-2">
+                    <div class="bee-wing-mini" style="left: 5px; transform: rotate(-30deg);"></div>
+                    <div class="bee-wing-mini" style="right: 5px; transform: rotate(30deg);"></div>
+                    <div class="bee-body-mini"></div>
+                    <div class="taegeuk-mini"></div>
+                    <div class="bee-eye-mini" style="left: 15px;"></div>
+                    <div class="bee-eye-mini" style="right: 15px;"></div>
+                    <div class="bee-mouth-mini"></div>
+                </div>
+                KANBEE
+            </a>
+            <div class="d-flex align-items-center">
+                <!-- Language Switcher -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-link btn-sm dropdown-toggle text-decoration-none text-dark fw-bold" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-globe me-1"></i> Language
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                        <li><a class="dropdown-item small" th:href="@{''(lang='ja')}" th:text="#{lang.ja}">日本語</a></li>
+                        <li><a class="dropdown-item small" th:href="@{''(lang='en')}" th:text="#{lang.en}">English</a></li>
+                        <li><a class="dropdown-item small" th:href="@{''(lang='ko')}" th:text="#{lang.ko}">한국어</a></li>
+                    </ul>
+                </div>
+
+                <div th:if="${!isLoggedIn}">
+                    <a th:href="@{/login}" class="btn btn-outline-dark btn-sm px-3" th:text="#{nav.login}">Login</a>
+                </div>
+                <div th:if="${isLoggedIn}">
+                    <span class="me-3 text-muted small"><span th:text="${currentUsername}">User</span><span th:text="#{lang.suffix}">님</span><span th:text="#{header.welcome}">, 환영합니다!</span></span>
+                    <a th:href="@{/mypage}" class="btn btn-warning btn-sm px-3" th:text="#{nav.mypage}">My Page</a>
+                    <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm px-3 ms-2" th:text="#{nav.logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg sticky-top mb-4">
+        <div class="container">
+            <div class="navbar-nav w-100 d-flex justify-content-around">
+                <a class="nav-link fw-bold" th:href="@{/}" th:text="#{nav.home}">Home</a>
+                <a class="nav-link fw-bold" th:href="@{/about}" th:text="#{nav.about}">About</a>
+                <a class="nav-link fw-bold" th:href="@{/community}" th:text="#{nav.community}">Community</a>
+            </div>
+        </div>
+    </nav>
+    
+    <script>
+        function flyKanbeeMini(element) {
+            const char = element.querySelector('.kanbee-char-mini');
+            char.classList.add('kanbee-fly-anim');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        // Language Selector fix for query parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const langItems = document.querySelectorAll('.dropdown-item[href^="?lang="]');
+            langItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Check if href is just ?lang=xx
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('?')) {
+                        e.preventDefault();
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const lang = href.split('=')[1].replace("'", "").replace(")", ""); // Basic cleanup if thymeleaf leaves artifacts, but th:href should handle it. 
+                        // Actually th:href="@{''(lang='ja')}" produces ?lang=ja relative to current URL.
+                        // So the browser handles it naturally.
+                        // But if we want to persist other params, we might need JS.
+                        // Thymeleaf's @{''(lang='ja')} preserves existing params automatically if configured? 
+                        // No, empty string means current URL, and params are appended. 
+                        // It usually replaces existing 'lang' param if present, or adds it.
+                    }
+                });
+            });
+        });
+    </script>
+</header>
+</body>
+</html>

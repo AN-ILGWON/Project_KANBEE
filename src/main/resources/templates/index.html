@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{site.title}">KANBEE - 컨시어지 서비스</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root { 
+            --kanbee-yellow: #FFD700; 
+            --kanbee-warm: #FFF9E3; 
+            --kanbee-orange: #FF8C00; 
+            --kanbee-brown: #5D4037;
+        }
+        body { background-color: #FFFDF0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .top-header { background-color: white; padding: 15px 0; border-bottom: 3px solid var(--kanbee-yellow); }
+        .navbar { background-color: var(--kanbee-yellow); }
+        .hero-section { background: linear-gradient(135deg, #FFF9E3 0%, #FFFFFF 100%); padding: 80px 0; border-bottom-left-radius: 50px; border-bottom-right-radius: 50px; margin-bottom: 50px; position: relative; overflow: hidden; text-align: center; }
+        
+        .category-card { background: white; border-radius: 20px; padding: 30px; transition: all 0.3s; border: 1px solid #EEE; height: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .category-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(255, 215, 0, 0.2); border-color: var(--kanbee-yellow); }
+        
+        .kanbee-char-mini { width: 50px; height: 50px; position: relative; cursor: pointer; transition: transform 0.3s; }
+        .kanbee-char-mini:hover { transform: scale(1.1); }
+        .kanbee-fly-anim { animation: flyAwayMini 1s ease-in-out forwards; pointer-events: none; }
+        
+        @keyframes flyAwayMini {
+            0% { transform: scale(1.1) translate(0, 0); opacity: 1; }
+            100% { transform: scale(0.1) translate(200px, -200px); opacity: 0; }
+        }
+
+        .bee-body-mini { width: 30px; height: 24px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 12px; left: 10px; border: 2px solid #333; z-index: 2; }
+        .bee-wing-mini { width: 15px; height: 18px; background: rgba(255, 255, 255, 0.9); border: 1px solid #DDD; border-radius: 50%; position: absolute; top: 5px; z-index: 1; }
+        .taegeuk-mini { width: 12px; height: 12px; position: absolute; top: 18px; left: 19px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 1px solid #333; z-index: 3; }
+        .bee-eye-mini { width: 3px; height: 3px; background: #333; border-radius: 50%; position: absolute; top: 18px; z-index: 4; }
+        .bee-mouth-mini { width: 6px; height: 3px; border-bottom: 1px solid #333; border-radius: 50%; position: absolute; top: 25px; left: 22px; z-index: 4; }
+        
+        .navbar { background-color: var(--kanbee-yellow); z-index: 1020; }
+        .dropdown-menu { z-index: 1050; }
+        
+        @keyframes flutter {
+            0% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(-10deg); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .kanbee-char-hero { width: 120px; height: 120px; position: relative; margin: 0 auto 20px; animation: float 3s ease-in-out infinite; cursor: pointer; transition: transform 0.3s; }
+        .kanbee-char-hero:hover { transform: scale(1.1); }
+        .kanbee-char-hero.flying { animation: flyAway 1.5s ease-in-out forwards; }
+        @keyframes flyAway {
+            0% { transform: scale(1.1) translate(0, 0) rotate(0deg); opacity: 1; }
+            20% { transform: scale(1.1) translate(-20px, 20px) rotate(-10deg); }
+            40% { transform: scale(0.9) translate(20px, -20px) rotate(10deg); }
+            100% { transform: scale(0.1) translate(500px, -500px) rotate(45deg); opacity: 0; }
+        }
+        
+        .bee-body-hero { width: 80px; height: 64px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 30px; left: 20px; border: 4px solid #333; z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .bee-wing-hero { width: 40px; height: 50px; background: rgba(255, 255, 255, 0.9); border: 2px solid #DDD; border-radius: 50%; position: absolute; top: 10px; z-index: 1; transform-origin: bottom center; }
+        .bee-wing-hero.left { left: 10px; animation: flutter 0.2s infinite alternate; }
+        .bee-wing-hero.right { right: 10px; animation: flutter 0.2s infinite alternate-reverse; }
+        .taegeuk-hero { width: 30px; height: 30px; position: absolute; top: 45px; left: 45px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 3px solid #333; z-index: 3; }
+        .bee-eye-hero { width: 10px; height: 10px; background: #333; border-radius: 50%; position: absolute; top: 45px; z-index: 4; }
+        .bee-cheek { width: 8px; height: 4px; background: #FFA0A0; border-radius: 50%; position: absolute; top: 55px; z-index: 4; opacity: 0.6; }
+        .bee-mouth { width: 10px; height: 5px; border-bottom: 2px solid #333; border-radius: 50%; position: absolute; top: 60px; left: 55px; z-index: 4; }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand d-flex align-items-center fw-bold" href="#" onclick="flyKanbeeMini(this); return false;">
+            <div class="kanbee-char-mini me-2">
+                <div class="bee-wing-mini" style="left: 5px; transform: rotate(-30deg);"></div>
+                <div class="bee-wing-mini" style="right: 5px; transform: rotate(30deg);"></div>
+                <div class="bee-body-mini"></div>
+                <div class="taegeuk-mini"></div>
+                <div class="bee-eye-mini" style="left: 15px;"></div>
+                <div class="bee-eye-mini" style="right: 15px;"></div>
+                <div class="bee-mouth-mini"></div>
+            </div>
+            KANBEE
+        </a>
+        <div class="d-flex align-items-center">
+            <!-- Language Switcher -->
+            <div class="dropdown me-3">
+                <button class="btn btn-link btn-sm dropdown-toggle text-decoration-none text-dark fw-bold" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-globe me-1"></i> Language
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                    <li><a class="dropdown-item small" th:href="@{''(lang='ja')}" th:text="#{lang.ja}">日本語</a></li>
+                    <li><a class="dropdown-item small" th:href="@{''(lang='en')}" th:text="#{lang.en}">English</a></li>
+                    <li><a class="dropdown-item small" th:href="@{''(lang='ko')}" th:text="#{lang.ko}">한국어</a></li>
+                </ul>
+            </div>
+
+            <div th:if="${!isLoggedIn}">
+                <a th:href="@{/login}" class="btn btn-outline-dark btn-sm px-3" th:text="#{nav.login}">ログイン</a>
+            </div>
+            <div th:if="${isLoggedIn}">
+                <span class="me-3 text-muted small"><span th:text="${userNickname}">ニックネーム</span><span th:text="#{lang.suffix}">さん</span><span th:text="#{header.welcome}">、ようこそ！</span></span>
+                <a th:href="@{/mypage}" class="btn btn-warning btn-sm px-3" th:text="#{nav.mypage}">マイページ</a>
+                <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm px-3 ms-2" th:text="#{nav.logout}">ログアウト</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg sticky-top mb-4">
+    <div class="container">
+        <div class="navbar-nav w-100 d-flex justify-content-around">
+            <a class="nav-link fw-bold" th:href="@{/}" th:text="#{nav.home}">ホーム</a>
+            <a class="nav-link fw-bold" th:href="@{/about}" th:text="#{nav.about}">紹介</a>
+            <a class="nav-link fw-bold" th:href="@{/community}" th:text="#{nav.community}">コミュニティ</a>
+        </div>
+    </div>
+</nav>
+
+<div class="hero-section mb-5">
+    <div class="container">
+        <div class="kanbee-char-hero" onclick="flyKanbee(this)">
+            <div class="bee-wing-hero left"></div>
+            <div class="bee-wing-hero right"></div>
+            <div class="bee-body-hero"></div>
+            <div class="taegeuk-hero"></div>
+            <div class="bee-eye-hero" style="left: 35px;"></div>
+            <div class="bee-eye-hero" style="right: 35px;"></div>
+            <div class="bee-cheek" style="left: 25px;"></div>
+            <div class="bee-cheek" style="right: 25px;"></div>
+            <div class="bee-mouth"></div>
+        </div>
+        <h1 class="display-4 fw-bold mb-3" th:text="#{index.welcome}">韓国旅行の「困った」を 解決</h1>
+        <p class="lead mb-4" th:text="#{index.description}">現地の プロ Kanbee が、あなたの 韓国旅行を「完璧」に サポートします！ 🍯</p>
+        <button type="button" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill" 
+                onclick="checkLoginAndOpenModal('OTHER')" th:text="#{btn.request}">予約を 頼む</button>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('RESTAURANT')" style="cursor: pointer;">
+                <i class="bi bi-shop h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.restaurant}">グルメ予約</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('HAIR')" style="cursor: pointer;">
+                <i class="bi bi-scissors h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.hair}">美容・エステ</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('POPUP')" style="cursor: pointer;">
+                <i class="bi bi-star h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.popup}">ポップアップ</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('DELIVERY')" style="cursor: pointer;">
+                <i class="bi bi-truck h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.delivery}">配達代行</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('HOTEL')" style="cursor: pointer;">
+                <i class="bi bi-building h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.hotel}">ホテル予約</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card text-center" onclick="checkLoginAndOpenModal('OTHER')" style="cursor: pointer;">
+                <i class="bi bi-chat-dots h1 text-warning mb-3"></i>
+                <h3 th:text="#{cat.other}">その他相談</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning border-0">
+                <h5 class="modal-title fw-bold" th:text="#{modal.request_title}">予約代行リクエスト</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/reservation/request}" method="post" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" th:text="#{modal.category}">カテゴリ</label>
+                        <select class="form-select" id="modalCategory" name="category">
+                            <option value="RESTAURANT" th:text="#{cat.restaurant}">グルメ予約</option>
+                            <option value="HAIR" th:text="#{cat.hair}">美容・エステ</option>
+                            <option value="POPUP" th:text="#{cat.popup}">ポップアップ</option>
+                            <option value="DELIVERY" th:text="#{cat.delivery}">配達代行</option>
+                            <option value="HOTEL" th:text="#{cat.hotel}">ホテル予約</option>
+                            <option value="OTHER" th:text="#{cat.other}">その他相談</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="requestTime" class="form-label fw-bold" th:text="#{modal.time}">希望日時</label>
+                        <input type="text" class="form-control" id="requestTime" name="requestTime" 
+                               th:placeholder="#{modal.placeholder.time}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="headcount" class="form-label fw-bold" th:text="#{modal.headcount}">人数</label>
+                        <input type="number" class="form-control" id="headcount" name="headcount" value="1" min="1" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="referenceUrl" class="form-label fw-bold" th:text="#{modal.reference_url}">参考リンク</label>
+                        <input type="text" class="form-control" id="referenceUrl" name="referenceUrl" 
+                               th:placeholder="#{modal.placeholder.reference_url}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" th:text="#{modal.file}">写真を 追加</label>
+                        <div class="input-group custom-file-button">
+                            <label class="input-group-text bg-white" for="file" th:text="#{modal.file.choose}">ファイル選択</label>
+                            <input type="file" class="form-control" id="file" name="file" style="display:none;" onchange="updateFileName(this)">
+                            <input type="text" class="form-control bg-light" id="fileName" th:placeholder="#{modal.file.none}" readonly onclick="document.getElementById('file').click()">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="requirements" class="form-label fw-bold" th:text="#{modal.requirements}">具体的な 要望</label>
+                        <textarea class="form-control" id="requirements" name="requirements" rows="4" 
+                                  th:placeholder="#{modal.placeholder.requirements}" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" th:text="#{modal.cancel}">キャンセル</button>
+                    <button type="submit" class="btn btn-warning px-4 fw-bold" th:text="#{modal.submit}">リクエストを 送信</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h2 class="fw-bold mb-4" th:text="#{index.community.title}">最近の 投稿</h2>
+    <div class="list-group">
+        <div th:each="post : ${recentPosts}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+             th:onclick="'location.href=\'/community/post/' + ${post.id} + '\''" style="cursor: pointer;">
+            <span th:text="${post.title}">Title</span>
+            <span class="badge bg-warning text-dark" th:text="${post.category}">Category</span>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- JavaScript for Reservation Logic -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+<script th:inline="javascript">
+    const isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+    const loginRequiredMsg = /*[[#{alert.login_required_msg}]]*/ 'ログインが必要です。';
+    const currentLang = /*[[${#locale.language}]]*/ 'ja';
+
+    // Initialize Flatpickr
+    document.addEventListener('DOMContentLoaded', function() {
+        let locale = 'ja'; // Default to Japanese
+        let altFormat = 'Y-m-d (D) H:i';
+        let time24hr = true;
+
+        if (currentLang === 'ko') {
+            locale = 'ko';
+            altFormat = 'Y-m-d (D) K h:i'; // 2026-02-20 (금) 오후 12:00
+            time24hr = false;
+        } else if (currentLang === 'en') {
+            locale = 'default';
+            altFormat = 'Y-m-d (D) h:i K'; // 2026-02-20 (Fri) 12:00 PM
+            time24hr = false;
+        }
+
+        flatpickr("#requestTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            altInput: true,
+            altFormat: altFormat,
+            locale: locale,
+            time_24hr: time24hr,
+            minDate: "today",
+            disableMobile: "true"
+        });
+    });
+    
+    const categoryNames = {
+        'RESTAURANT': /*[[#{cat.restaurant}]]*/ 'グルメ予約',
+        'HAIR': /*[[#{cat.hair}]]*/ '美容・エステ',
+        'POPUP': /*[[#{cat.popup}]]*/ 'ポップアップ',
+        'DELIVERY': /*[[#{cat.delivery}]]*/ '配達代行',
+        'HOTEL': /*[[#{cat.hotel}]]*/ 'ホテル予約',
+        'OTHER': /*[[#{cat.other}]]*/ 'その他相談'
+    };
+
+    function checkLoginAndOpenModal(category) {
+        if (!isLoggedIn) {
+            alert(loginRequiredMsg);
+            window.location.href = '/login';
+            return;
+        }
+        
+        const select = document.getElementById('modalCategory');
+        if (select) {
+            select.value = category;
+        }
+        
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('reservationModal'));
+        modal.show();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language Selector fix
+        const langItems = document.querySelectorAll('.dropdown-item[href^="?lang="]');
+        langItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const urlParams = new URLSearchParams(window.location.search);
+                const lang = this.getAttribute('href').split('=')[1];
+                urlParams.set('lang', lang);
+                window.location.search = urlParams.toString();
+            });
+        });
+    });
+
+    function flyKanbee(element) {
+        element.classList.add('flying');
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1500);
+    }
+
+    function flyKanbeeMini(element) {
+        const char = element.querySelector('.kanbee-char-mini');
+        char.classList.add('kanbee-fly-anim');
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 800);
+    }
+
+    function updateFileName(input) {
+        if (input.files && input.files.length > 0) {
+            document.getElementById('fileName').value = input.files[0].name;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${post.title} + ' - KANBEE Community'">Post Title - KANBEE Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { 
+            --kanbee-yellow: #FFD700; 
+            --kanbee-warm: #FFF9E3; 
+            --kanbee-brown: #5D4037;
+        }
+        body { background-color: #FFFDF0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .top-header { background-color: white; padding: 15px 0; border-bottom: 3px solid var(--kanbee-yellow); }
+        .kanbee-char-mini { width: 50px; height: 50px; position: relative; cursor: pointer; }
+        .bee-body-mini { width: 30px; height: 24px; background: linear-gradient(to bottom, #FFD700 0%, #FFD700 25%, #333 25%, #333 40%, #FFD700 40%, #FFD700 60%, #333 60%, #333 75%, #FFD700 75%); border-radius: 50% 50% 45% 45%; position: absolute; top: 12px; left: 10px; border: 2px solid #333; z-index: 2; }
+        .bee-wing-mini { width: 15px; height: 18px; background: rgba(255, 255, 255, 0.9); border: 1px solid #DDD; border-radius: 50%; position: absolute; top: 5px; z-index: 1; }
+        .taegeuk-mini { width: 12px; height: 12px; position: absolute; top: 18px; left: 19px; background: linear-gradient(to bottom, #FF0000 50%, #0000FF 50%); border-radius: 50%; border: 1px solid #333; z-index: 3; }
+        .bee-eye-mini { width: 3px; height: 3px; background: #333; border-radius: 50%; position: absolute; top: 18px; z-index: 4; }
+        
+        .navbar { background-color: var(--kanbee-yellow); z-index: 1020; }
+        .dropdown-menu { z-index: 1050; }
+        .post-card { background: white; border-radius: 15px; margin-bottom: 20px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
+        .post-category { font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; font-weight: bold; }
+        .cat-talk { background: #E3F2FD; color: #1976D2; }
+        .cat-question { background: #FFF3E0; color: #F57C00; }
+        .cat-info { background: #E8F5E9; color: #388E3C; }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand d-flex align-items-center fw-bold text-decoration-none text-dark" th:href="@{/}">
+            <div class="kanbee-char-mini me-2">
+                <div class="bee-wing-mini" style="left: 5px; transform: rotate(-30deg);"></div>
+                <div class="bee-wing-mini" style="right: 5px; transform: rotate(30deg);"></div>
+                <div class="bee-body-mini"></div>
+                <div class="taegeuk-mini"></div>
+                <div class="bee-eye-mini" style="left: 15px;"></div>
+                <div class="bee-eye-mini" style="right: 15px;"></div>
+            </div>
+            KANBEE
+        </a>
+        <div class="d-flex align-items-center">
+            <!-- Language Switcher -->
+            <div class="dropdown me-3">
+                <button class="btn btn-link btn-sm dropdown-toggle text-decoration-none text-dark fw-bold" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-globe me-1"></i> Language
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                    <li><a class="dropdown-item small" href="?lang=ja">🇯🇵 <span th:text="#{lang.ja}">日本語</span></a></li>
+                    <li><a class="dropdown-item small" href="?lang=en">🇺🇸 <span th:text="#{lang.en}">English</span></a></li>
+                    <li><a class="dropdown-item small" href="?lang=ko">🇰🇷 <span th:text="#{lang.ko}">한국어</span></a></li>
+                </ul>
+            </div>
+
+            <div th:if="${isLoggedIn}">
+                <span class="me-3 text-muted small"><span th:text="${userNickname}">ニックネーム</span><span th:text="#{lang.suffix}">さん</span><span th:text="#{header.welcome}">、ようこそ！</span></span>
+                <a th:href="@{/mypage}" class="btn btn-warning btn-sm px-3" th:text="#{nav.mypage}">マイページ</a>
+                <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm px-3 ms-2" th:text="#{nav.logout}">ログアウト</a>
+            </div>
+            <div th:if="${!isLoggedIn}">
+                <a th:href="@{/login}" class="btn btn-outline-dark btn-sm px-3" th:text="#{nav.login}">ログイン</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg sticky-top mb-4">
+    <div class="container">
+        <div class="navbar-nav w-100 d-flex justify-content-around">
+            <a class="nav-link fw-bold" th:href="@{/}" th:text="#{nav.home}">ホーム</a>
+            <a class="nav-link fw-bold" th:href="@{/about}" th:text="#{nav.about}">紹介</a>
+            <a class="nav-link fw-bold active" th:href="@{/community}" th:text="#{nav.community}">コミュニティ</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a th:href="@{/community}" class="text-decoration-none text-muted fw-bold">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{community.board_title}">コミュニティ掲示板</span>
+                </a>
+            </div>
+
+            <div class="post-card card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="post-category" th:classappend="${post.category != null ? 'cat-' + #strings.toLowerCase(post.category) : 'cat-talk'}" th:text="${post.category}">Category</span>
+                    <small class="text-muted" th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : ''}">Date</small>
+                </div>
+                
+                <h2 class="fw-bold mb-4" th:text="${post.title}">Title</h2>
+                
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold me-2"><i class="bi bi-person-circle"></i> <span th:text="${post.nickname}">Author</span></span>
+                    <div th:if="${isLoggedIn} and (${post.author == currentUsername} or ${isAdmin})">
+                        <a th:href="@{/community/edit/{id}(id=${post.id})}" class="btn btn-sm btn-outline-secondary" th:text="#{community.btn.edit}">수정</a>
+                        <form th:action="@{/community/delete/{id}(id=${post.id})}" method="post" class="d-inline" th:attr="onsubmit='return confirm(\'' + #{community.confirm_delete} + '\');'">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{community.btn.delete}">삭제</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="post-content mb-5" style="min-height: 200px; white-space: pre-wrap;" th:text="${post.content}">
+                    Content...
+                </div>
+                
+                <div th:if="${post.imageUrl}" class="mb-5 text-center">
+                    <img th:src="${post.imageUrl}" class="img-fluid rounded" style="max-height: 500px;" alt="Post Image">
+                </div>
+                
+                <hr>
+                
+                <h5 class="fw-bold mb-4"><i class="bi bi-chat-dots"></i> <span th:text="#{community.comments}">Comments</span></h5>
+                
+                <div class="list-group list-group-flush mb-4">
+                    <div th:each="comment : ${post.comments}" class="list-group-item bg-light border-0 rounded mb-2">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="fw-bold" th:text="${comment.nickname}">User</span>
+                                <small class="text-muted ms-2" th:text="${comment.createdAt != null ? #temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm') : ''}">Date</small>
+                            </div>
+                            <div th:if="${isLoggedIn} and (${comment.author == currentUsername} or ${isAdmin})">
+                                <form th:action="@{/community/comment/delete/{id}(id=${comment.id})}" method="post" class="d-inline">
+                                    <input type="hidden" name="postId" th:value="${post.id}">
+                                    <button type="submit" class="btn btn-sm text-danger border-0 bg-transparent p-0"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-1" th:text="${comment.content}">Comment content</p>
+                    </div>
+                    <div th:if="${#lists.isEmpty(post.comments)}" class="text-center text-muted py-3">
+                        <span th:text="#{community.no_posts}">No comments yet.</span>
+                    </div>
+                </div>
+                
+                <!-- Comment Form (Optional, assuming logged in) -->
+                <div th:if="${isLoggedIn}">
+                    <form th:action="@{/community/comment}" method="post">
+                        <input type="hidden" name="postId" th:value="${post.id}">
+                        <div class="input-group">
+                            <input type="text" name="content" class="form-control" th:placeholder="#{community.comment.placeholder}" required>
+                            <button class="btn btn-warning" type="submit" th:text="#{community.comment.submit}">Send</button>
+                        </div>
+                    </form>
+                </div>
+                <div th:if="${!isLoggedIn}" class="alert alert-light text-center">
+                    <a th:href="@{/login}" class="text-decoration-none fw-bold" th:text="#{nav.login}">Login</a> <span th:text="#{community.comment.login_msg}">コメントを 残すには ログインして ください。</span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Copyright Policy - KANBEE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="container py-5 mt-5">
+        <h2 class="fw-bold mb-4" style="color: #5D4037;"><i class="bi bi-c-circle-fill me-2"></i>Copyright Policy</h2>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-3">1. Copyright Ownership</h5>
+                <p class="text-muted">
+                    All content provided on the KANBEE website (text, images, logos, etc.) is the property of KANBEE or its content suppliers and is protected by copyright laws.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3 mt-4">2. Usage Restrictions</h5>
+                <p class="text-muted">
+                    Users may not copy, reproduce, distribute, or create derivative works from the content without prior written permission from KANBEE.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3 mt-4">3. User-Generated Content</h5>
+                <p class="text-muted">
+                    By posting content on KANBEE, users grant KANBEE a non-exclusive, royalty-free license to use, reproduce, and display such content in connection with the service.
+                </p>
+                
+                <div class="alert alert-light mt-4 border">
+                    <small class="text-secondary">Effective Date: 2024-01-01</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Youth Protection Policy - KANBEE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="container py-5 mt-5">
+        <h2 class="fw-bold mb-4" style="color: #5D4037;"><i class="bi bi-shield-check-fill me-2"></i>Youth Protection Policy</h2>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <div class="alert alert-warning d-flex align-items-center mb-4">
+                    <i class="bi bi-exclamation-circle-fill fs-4 me-3"></i>
+                    <div>
+                        <strong>Commitment:</strong> KANBEE is committed to protecting youth from harmful content and ensuring a safe online environment.
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-dark mb-3">1. Protection Measures</h5>
+                <p class="text-muted">
+                    We implement technical and administrative measures to prevent youth from accessing harmful content.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3 mt-4">2. Reporting System</h5>
+                <p class="text-muted">
+                    Users can report harmful content through our dedicated reporting channel. We will take prompt action to address any reported issues.
+                </p>
+
+                <h5 class="fw-bold text-dark mb-3 mt-4">3. Education and Training</h5>
+                <p class="text-muted">
+                    We provide regular education and training for our staff on youth protection policies and procedures.
+                </p>
+                
+                <div class="alert alert-light mt-4 border">
+                    <small class="text-secondary">Effective Date: 2024-01-01</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
