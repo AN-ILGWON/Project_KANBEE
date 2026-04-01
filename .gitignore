@@ -1,0 +1,39 @@
+# ===== Build Output =====
+build/
+bin/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== IDE (Eclipse / STS) =====
+.classpath
+.project
+.settings/
+.apt_generated/
+.apt_generated_tests/
+
+# ===== IDE (VS Code) =====
+.vscode/
+
+# ===== IDE (IntelliJ IDEA) =====
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ===== Gradle =====
+.gradle/
+!gradle/wrapper/
+
+# ===== Log Files =====
+*.log
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Sensitive / Environment =====
+# application.properties contains API keys - use application-local.properties instead
+# src/main/resources/application-local.properties
+
+# ===== File Uploads =====
+uploads/
