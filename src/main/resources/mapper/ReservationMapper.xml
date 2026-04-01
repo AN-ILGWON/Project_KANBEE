@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 예약 관련 데이터 처리를 위한 MyBatis 매퍼 설정 파일입니다. -->
+<mapper namespace="com.kanbee.project.mapper.ReservationMapper">
+
+    <!-- findAll: 모든 예약 목록을 최신순으로 조회합니다. (관리자용) -->
+    <select id="findAll" resultType="com.kanbee.project.model.Reservation">
+        SELECT * FROM reservations ORDER BY created_at DESC
+    </select>
+
+    <!-- findByUsername: 특정 사용자의 예약 목록을 조회합니다. -->
+    <select id="findByUsername" resultType="com.kanbee.project.model.Reservation">
+        SELECT * FROM reservations WHERE username = #{username} ORDER BY created_at DESC
+    </select>
+
+    <!-- findById: 예약 번호로 특정 예약 상세 정보를 조회합니다. -->
+    <select id="findById" resultType="com.kanbee.project.model.Reservation">
+        SELECT * FROM reservations WHERE id = #{id}
+    </select>
+
+    <!-- insert: 새로운 예약 신청 정보를 저장합니다. -->
+    <insert id="insert" parameterType="com.kanbee.project.model.Reservation">
+        INSERT INTO reservations (username, category, request_time, headcount, requirements, ticket_link, reference_url, image_url, status)
+        VALUES (#{username}, #{category}, #{requestTime}, #{headcount}, #{requirements}, #{ticketLink}, #{referenceUrl}, #{imageUrl}, 'PENDING')
+    </insert>
+
+    <!-- updateStatus: 예약의 처리 상태를 변경합니다. -->
+    <update id="updateStatus">
+        UPDATE reservations SET status = #{status} WHERE id = #{id}
+    </update>
+
+    <!-- updateAdminComment: 관리자의 답변 또는 메모를 업데이트합니다. -->
+    <update id="updateAdminComment">
+        UPDATE reservations SET admin_comment = #{adminComment} WHERE id = #{id}
+    </update>
+
+    <!-- updateTicketLink: 예약 티켓 링크를 등록/수정합니다. -->
+    <update id="updateTicketLink">
+        UPDATE reservations SET ticket_link = #{ticketLink} WHERE id = #{id}
+    </update>
+
+    <!-- deleteAll: 모든 예약 데이터를 삭제합니다. -->
+    <delete id="deleteAll">
+        DELETE FROM reservations
+    </delete>
+
+    <!-- updateReservation: 예약 상세 정보를 수정합니다. -->
+    <update id="updateReservation" parameterType="com.kanbee.project.model.Reservation">
+        UPDATE reservations
+        SET category = #{category},
+            request_time = #{requestTime},
+            headcount = #{headcount},
+            requirements = #{requirements},
+            reference_url = #{referenceUrl},
+            image_url = #{imageUrl},
+            ticket_link = #{ticketLink},
+            admin_comment = #{adminComment},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

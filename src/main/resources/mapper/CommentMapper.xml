@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kanbee.project.mapper.CommentMapper">
+
+    <select id="findByPostId" resultType="com.kanbee.project.model.Comment">
+        SELECT c.id, c.post_id as postId, c.author, c.content, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community_comments c
+        LEFT JOIN users u ON c.author = u.username
+        WHERE c.post_id = #{postId}
+        ORDER BY c.created_at ASC
+    </select>
+
+    <insert id="insert" parameterType="com.kanbee.project.model.Comment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO community_comments (post_id, author, content)
+        VALUES (#{postId}, #{author}, #{content})
+    </insert>
+
+    <select id="findById" resultType="com.kanbee.project.model.Comment">
+        SELECT c.id, c.post_id as postId, c.author, c.content, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community_comments c
+        LEFT JOIN users u ON c.author = u.username
+        WHERE c.id = #{id}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM community_comments WHERE id = #{id}
+    </delete>
+
+</mapper>

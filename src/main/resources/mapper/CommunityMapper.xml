@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 커뮤니티(게시판) 관련 데이터 처리를 위한 MyBatis 매퍼 설정 파일입니다. -->
+<mapper namespace="com.kanbee.project.mapper.CommunityMapper">
+
+    <!-- findAll: 모든 게시글을 최신순으로 조회합니다. (작성자 닉네임 포함) -->
+    <select id="findAll" resultType="com.kanbee.project.model.Community">
+        SELECT c.id, c.author, c.title, c.content, c.category, c.image_url as imageUrl, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community c
+        LEFT JOIN users u ON c.author = u.username
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!-- search: 제목 또는 내용에 검색어가 포함된 게시글을 조회합니다. -->
+    <select id="search" resultType="com.kanbee.project.model.Community">
+        SELECT c.id, c.author, c.title, c.content, c.category, c.image_url as imageUrl, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community c
+        LEFT JOIN users u ON c.author = u.username
+        WHERE c.title LIKE CONCAT('%', #{keyword}, '%') OR c.content LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!-- findById: 게시글 ID를 기준으로 상세 정보를 조회합니다. -->
+    <select id="findById" resultType="com.kanbee.project.model.Community">
+        SELECT c.id, c.author, c.title, c.content, c.category, c.image_url as imageUrl, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community c
+        LEFT JOIN users u ON c.author = u.username
+        WHERE c.id = #{id}
+    </select>
+
+    <!-- findByAuthor: 특정 작성자가 쓴 게시글 목록을 조회합니다. -->
+    <select id="findByAuthor" resultType="com.kanbee.project.model.Community">
+        SELECT c.id, c.author, c.title, c.content, c.category, c.image_url as imageUrl, c.created_at as createdAt,
+               COALESCE(u.nickname, c.author) as nickname
+        FROM community c
+        LEFT JOIN users u ON c.author = u.username
+        WHERE c.author = #{author}
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!-- insert: 새로운 게시글을 저장합니다. useGeneratedKeys를 통해 자동 생성된 ID를 객체에 담아줍니다. -->
+    <insert id="insert" parameterType="com.kanbee.project.model.Community" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO community (author, title, content, category, image_url)
+        VALUES (#{author}, #{title}, #{content}, #{category}, #{imageUrl})
+    </insert>
+
+    <!-- update: 게시글의 제목, 내용, 카테고리, 이미지를 수정합니다. -->
+    <update id="update" parameterType="com.kanbee.project.model.Community">
+        UPDATE community
+        SET title = #{title}, content = #{content}, category = #{category}, image_url = #{imageUrl}
+        WHERE id = #{id}
+    </update>
+
+    <!-- delete: 특정 게시글을 삭제합니다. -->
+    <delete id="delete">
+        DELETE FROM community WHERE id = #{id}
+    </delete>
+
+    <!-- deleteByAuthor: 특정 작성자의 모든 게시글을 삭제합니다. -->
+    <delete id="deleteByAuthor">
+        DELETE FROM community WHERE author = #{author}
+    </delete>
+
+    <!-- deleteAll: 모든 게시글 데이터를 삭제합니다. -->
+    <delete id="deleteAll">
+        DELETE FROM community
+    </delete>
+</mapper>

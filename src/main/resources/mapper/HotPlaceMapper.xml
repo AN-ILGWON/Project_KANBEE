@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 추천 장소(HotPlace) 데이터 접근을 위한 MyBatis 매퍼 설정 파일입니다. -->
+<mapper namespace="com.kanbee.project.mapper.HotPlaceMapper">
+
+    <!-- 모든 추천 장소 목록을 ID 오름차순으로 조회합니다. -->
+    <select id="findAll" resultType="com.kanbee.project.model.HotPlace">
+        SELECT * FROM hot_places ORDER BY id ASC
+    </select>
+
+    <!-- 특정 카테고리에 해당하는 장소 목록을 조회합니다. -->
+    <select id="findByCategory" resultType="com.kanbee.project.model.HotPlace">
+        SELECT * FROM hot_places WHERE category = #{category} ORDER BY id ASC
+    </select>
+
+    <!-- ID를 기준으로 특정 장소의 상세 정보를 조회합니다. -->
+    <select id="findById" resultType="com.kanbee.project.model.HotPlace">
+        SELECT * FROM hot_places WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.kanbee.project.model.HotPlace" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO hot_places (name, category, location, description, image_url, tag)
+        VALUES (#{name}, #{category}, #{location}, #{description}, #{imageUrl}, #{tag})
+    </insert>
+
+</mapper>
